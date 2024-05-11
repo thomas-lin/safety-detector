@@ -1,0 +1,8 @@
+version: "3"
+services:
+  label-studio:
+    image: heartexlabs/label-studio:1.11.0
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./label-studio/data:/label-studio/data

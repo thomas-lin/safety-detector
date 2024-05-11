@@ -1,0 +1,13 @@
+.venv*
+.tox
+*.egg-info
+*_cache
+build
+dist
+__pycache__
+.coverage
+.deps
+*.dat
+.env*
+!.env.example
+htmlcov
