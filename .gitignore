@@ -4,6 +4,7 @@
 *_cache
 build
 dist
+storage
 __pycache__
 .coverage
 .deps

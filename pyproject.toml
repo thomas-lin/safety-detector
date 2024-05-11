@@ -10,9 +10,13 @@ aia-yolo = "aia_yolo.main:main"
 aia-yolo-build = "aia_yolo.main:build"
 
 [tool.poetry.dependencies]
-python = ">= 3.9, < 3.11"
+python = ">= 3.10, < 3.11"
 python-dotenv = "0.19.2"
-typing-extensions = "4.6.1"
+typing-extensions = "4.8.0"
+torch = "^2.3.0"
+torchvision = "^0.18.0"
+torchaudio = "^2.3.0"
+ultralytics = "^8.2.12"
 
 [tool.poetry.group.dev.dependencies]
 black = "22.1.0"
