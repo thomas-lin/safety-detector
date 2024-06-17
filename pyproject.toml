@@ -1,13 +1,14 @@
 [tool.poetry]
-name = "aia-yolo"
+name = "safety-detector"
 version = "0.1.0"
 description = ""
 authors = ["Thomas Lin <bbkings2002@gmail.com>"]
 readme = "README.md"
 
 [tool.poetry.scripts]
-aia-yolo = "aia_yolo.main:main"
-aia-yolo-train = "aia_yolo.train:train"
+safety-detector = "safety_detector.main:main"
+safety-detector-train = "safety_detector.train:train"
+safety-detector-predict = "safety_detector.predict:predict"
 
 [tool.poetry.dependencies]
 python = ">= 3.10, < 3.11"

@@ -13,4 +13,4 @@ __pycache__
 !.env.example
 htmlcov
 dataset
-run
+runs
