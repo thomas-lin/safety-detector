@@ -1,49 +1,57 @@
 import os
+import time
+from threading import Event
 
 import cv2
 from ultralytics import YOLO
 
 
-def predict():
+def predict_direct():
+    stream_path = [
+        "https://reac.taipei:8443/hls/S11CC-B8DF6B0015ED/index.m3u8",
+        # "https://reac.taipei:8443/hls/S11CC-B8DF6B001543/index.m3u8",
+        # "https://reac2.taipei:10443/p/1007-e8eb3e/live/index.m3u8",
+        # "https://reac2.taipei:20443/p/105d-99f106/live/index.m3u8",
+        # "https://reac2.taipei:10443/p/1068-cf591f/live/index.m3u8",
+        # "https://reac.taipei:8443/hls/S11CC-B8DF6B0015C7/index.m3u8",
+        "https://reac2.taipei:10443/p/109f-cecf1c/live/index.m3u8",
+        "https://reac.taipei:8443/hls/S11CC-B8DF6B00157D/index.m3u8",
+    ]
+    stop_event = Event()
+    predict("test", stream_path[0], stop_event, True)
+
+
+def predict(ac_no: str, videoUrl: str, stop_event: Event, is_show: bool = False):
     app_path = os.path.join(os.path.dirname(__file__), '..')
     model_path = os.path.join(app_path, 'runs/detect/train3/weights/best.pt')
-    stream_path = [
-        "https://reac.taipei:8443/hls/S11CC-B8DF6B001533/index.m3u8",
-        # "https://reac2.taipei:20443/p/109f-cecf1c/live/index.m3u8",
-        # "https://reac2.taipei:20443/p/109e-1ab86b/live/index.m3u8",
-        # "https://reac.taipei:8443/hls/S11CC-B8DF6B0013D5/index.m3u8",
-        # 'https://reac.taipei:8443/hls/S11CC-B8DF6B0013CD/index.m3u8',
-        # 'https://reac.taipei:8443/hls/S11CC-B8DF6B0014E6/index.m3u8',
-        # 'https://reac2.taipei:20443/p/109d-b204dd/live/index.m3u8',
-    ]
-
-    cap = cv2.VideoCapture(stream_path[0])
-    # Load a pretrained YOLO model (recommended for training)
+    cap = cv2.VideoCapture(videoUrl)
     model = YOLO(model_path)
 
     while cap.isOpened():
-        success, frame = cap.read()
+        if stop_event.is_set():
+            break
 
+        success, frame = cap.read()
         if success:
             # Perform object detection on an image
-            result, *tail = model(frame)
+            result, *tail = model.track(frame, is_show)
 
-            boxes = result.boxes  # Boxes object for bounding box outputs
-            masks = result.masks  # Masks object for segmentation masks outputs
-            keypoints = result.keypoints  # Keypoints object for pose outputs
-            probs = result.probs  # Probs object for classification outputs
-            obb = result.obb  # Oriented boxes object for OBB output
+            for box in result.boxes:
+                cls_id = int(box.cls)
+                conf = float(box.conf)
+                cls_name = result.names[cls_id]
+                print(f"[{ac_no}] cls_id:{cls_id}, cls_name:{cls_name}, conf:{conf}")
 
-            annotated_frame = result.plot()
-
-            # Display the annotated frame
-            cv2.imshow("YOLOv8 Inference", annotated_frame)
+            if is_show is True:
+                annotated_frame = result.plot()
+                cv2.imshow("YOLOv8 Tracking", annotated_frame)
 
             if cv2.waitKey(1) & 0xFF == ord("q"):
                 break
         else:
             # Break the loop if the end of the video is reached
             break
+        time.sleep(1)
 
     # Release the video capture object and close the display window
     cap.release()
