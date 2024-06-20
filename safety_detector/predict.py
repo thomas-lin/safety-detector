@@ -5,6 +5,8 @@ from threading import Event
 import cv2
 from ultralytics import YOLO
 
+from .strapi_client import SafetyEvent, StrapiClient
+
 
 def predict_direct():
     stream_path = [
@@ -22,6 +24,7 @@ def predict_direct():
 
 
 def predict(ac_no: str, videoUrl: str, stop_event: Event, is_show: bool = False):
+    strapi_client = StrapiClient()
     app_path = os.path.join(os.path.dirname(__file__), '..')
     model_path = os.path.join(app_path, 'runs/detect/train3/weights/best.pt')
     cap = cv2.VideoCapture(videoUrl)
@@ -41,6 +44,14 @@ def predict(ac_no: str, videoUrl: str, stop_event: Event, is_show: bool = False)
                 conf = float(box.conf)
                 cls_name = result.names[cls_id]
                 print(f"[{ac_no}] cls_id:{cls_id}, cls_name:{cls_name}, conf:{conf}")
+
+                event: SafetyEvent = {
+                    "AC_NO": ac_no,
+                    "className": cls_name,
+                    "trace_id": "h2ll",
+                    "conf": conf,
+                }
+                strapi_client.createSafetyEvent(event)
 
             if is_show is True:
                 annotated_frame = result.plot()

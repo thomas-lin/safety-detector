@@ -1,22 +1,19 @@
 import asyncio
 import json
+import os
 from threading import Event, Thread
 from typing import Dict
 
 import nats
-from dotenv import dotenv_values
+from dotenv import load_dotenv
 
 from .predict import predict
 
 
 async def run():
+    load_dotenv()
     predictThreads: Dict[str, (Thread, Event)] = {}
-
-    config = {
-        **dotenv_values(".env"),
-    }
-
-    nc = await nats.connect(f"nats://{config['NATS_SERVER']}")
+    nc = await nats.connect(f"nats://{os.getenv('NATS_SERVER')}")
     sub = await nc.subscribe("app.*.*")
     try:
         async for msg in sub.messages:
