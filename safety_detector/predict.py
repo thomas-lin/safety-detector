@@ -26,7 +26,8 @@ def predict_direct():
 def predict(ac_no: str, videoUrl: str, stop_event: Event, is_show: bool = False):
     strapi_client = StrapiClient()
     app_path = os.path.join(os.path.dirname(__file__), '..')
-    model_path = os.path.join(app_path, 'runs/detect/train3/weights/best.pt')
+    # model_path = os.path.join(app_path, 'runs/detect/train3/weights/best.pt')
+    model_path = os.path.join(app_path, 'model/best8n10CTo5C0618.pt')
     cap = cv2.VideoCapture(videoUrl)
     model = YOLO(model_path)
 
@@ -37,21 +38,27 @@ def predict(ac_no: str, videoUrl: str, stop_event: Event, is_show: bool = False)
         success, frame = cap.read()
         if success:
             # Perform object detection on an image
-            result, *tail = model.track(frame, is_show)
+            result, *tail = model.track(frame, show=is_show, tracker="bytetrack.yaml", persist=True)
 
             for box in result.boxes:
+
+                if box.id is not None:
+                    print(f"[{ac_no}] box.id:{box.id.int()}")
+                id = box.id.int() if box.id is not None else -1
                 cls_id = int(box.cls)
                 conf = float(box.conf)
                 cls_name = result.names[cls_id]
-                print(f"[{ac_no}] cls_id:{cls_id}, cls_name:{cls_name}, conf:{conf}")
+                print(f"[{ac_no}] trace_id:{id}, cls_id:{cls_id}, cls_name:{cls_name}, conf:{conf}")
 
-                event: SafetyEvent = {
-                    "AC_NO": ac_no,
-                    "className": cls_name,
-                    "trace_id": "h2ll",
-                    "conf": conf,
-                }
-                strapi_client.createSafetyEvent(event)
+                if conf > 0.5 or True:
+                    event: SafetyEvent = {
+                        "ac_no": ac_no,
+                        "cls_id": cls_id,
+                        "cls_name": cls_name,
+                        "trace_id": id,
+                        "confidence": conf,
+                    }
+                    strapi_client.createSafetyEvent(event)
 
             if is_show is True:
                 annotated_frame = result.plot()

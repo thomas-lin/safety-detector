@@ -1,0 +1,7 @@
+path: AIA_10class/
+train: 'train/images'
+val: 'valid/images'
+test: 'test/images'
+
+nc: 5
+names: ['0: Hardhat', '1: Safety Vest', '2: NO-Hardhat', '3: Person', '4: NO-Safety Vest' ]

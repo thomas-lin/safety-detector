@@ -19,6 +19,7 @@ torchvision = "^0.18.0"
 torchaudio = "^2.3.0"
 ultralytics = "^8.2.12"
 nats-py = "^2.7.2"
+urllib3 = "^2.2.2"
 
 [tool.poetry.group.dev.dependencies]
 black = "22.1.0"

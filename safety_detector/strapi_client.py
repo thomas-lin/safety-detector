@@ -33,13 +33,15 @@ class StrapiClient:
         return self._id
 
     def createSafetyEvent(self, event: SafetyEvent):
-        strapi_api = os.getenv('STRAPI_APP_SAFETY_COUNTER_API')
-        body = json.dumps(event).encode("utf-8")
-        self.pool.request(
+        data = {"data": event}
+        body = json.dumps(data).encode("utf-8")
+        strapi_api = os.getenv('STRAPI_APP_SAFETY_EVENT_API')
+
+        result = self.pool.request(
             "POST",
             f"{strapi_api}",
             headers={"Content-Type": "application/json"},
             body=body,
         )
-
+        print(result.data.decode("utf-8"))
         pass

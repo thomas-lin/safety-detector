@@ -11,7 +11,6 @@ from .predict import predict
 
 
 async def run():
-    load_dotenv()
     predictThreads: Dict[str, (Thread, Event)] = {}
     nc = await nats.connect(f"nats://{os.getenv('NATS_SERVER')}")
     sub = await nc.subscribe("app.*.*")
@@ -24,7 +23,7 @@ async def run():
                     continue
                 stop_event = Event()
                 thread = Thread(
-                    target=predict, args=(data["AC_NO"], data["VIDEO_URL"], stop_event), daemon=True
+                    target=predict, args=(data["AC_NO"], data["VIDEOURL"], stop_event), daemon=True
                 )
                 thread.start()
                 predictThreads[data["AC_NO"]] = (thread, stop_event)
@@ -48,4 +47,5 @@ async def run():
 
 
 def main():
+    load_dotenv()
     asyncio.run(run())
