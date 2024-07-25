@@ -1,13 +1,14 @@
 [tool.poetry]
-name = "aia-yolo"
+name = "safety-detector"
 version = "0.1.0"
 description = ""
 authors = ["Thomas Lin <bbkings2002@gmail.com>"]
 readme = "README.md"
 
 [tool.poetry.scripts]
-aia-yolo = "aia_yolo.main:main"
-aia-yolo-build = "aia_yolo.main:build"
+safety-detector = "safety_detector.main:main"
+safety-detector-train = "safety_detector.train:train"
+safety-detector-predict = "safety_detector.predict:predict_direct"
 
 [tool.poetry.dependencies]
 python = ">= 3.10, < 3.11"
@@ -17,6 +18,8 @@ torch = "^2.3.0"
 torchvision = "^0.18.0"
 torchaudio = "^2.3.0"
 ultralytics = "^8.2.12"
+nats-py = "^2.7.2"
+urllib3 = "^2.2.2"
 
 [tool.poetry.group.dev.dependencies]
 black = "22.1.0"
